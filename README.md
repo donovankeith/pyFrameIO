@@ -3,7 +3,7 @@ A Python wrapper for the [Frame.io API](http://docs.frameio.apiary.io/).
 
 ## Contributors
 
-- [Donovan Keith](http://www.donovankeith.com) <donovanskeith@gmail.com>
+- [Donovan Keith](http://www.donovankeith.com) ([Email](mailto:donovanskeith@gmail.com))
 
 
 ## Goals
