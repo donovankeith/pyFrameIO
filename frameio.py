@@ -52,22 +52,17 @@ class FrameIO():
             return False
 
         if not self.action_key:
-            print "No action key, don't know how to login"
             return False
 
-        print "password: ", self.password
-        print self
-
         if self.action_key == "user-non-google":
-            print "Non-Google User, standard login okay"
             return self.login_user_non_google()
 
         elif self.action_key == "user-google":
-            print "Google Login"
             #TODO: Implement
+            pass
         elif self.action_key == "user-eligible":
-            print "Eligible for sign-up"
             #TODO: Implement
+            pass
         else:
             print "Non-implemented action_key: ", self.action_key
 
@@ -82,8 +77,6 @@ class FrameIO():
 
         r = requests.post("https://api.frame.io/login", values)
         response = r.json()
-
-        print response
 
         if "x" in response:
             self.user_id = response["x"]
