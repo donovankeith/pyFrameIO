@@ -18,5 +18,10 @@ class LoginTestCase(unittest.TestCase):
         frameio_api = frameio.FrameIO()
         self.assertFalse(frameio_api.login(email=email, password="sldfj"))
 
+    def test_get_user_data(self):
+        frameio_api = frameio.FrameIO()
+        frameio_api.login(email=email, password=password)
+        print frameio_api.get_user_data()
+
 if __name__ == '__main__':
     unittest.main()

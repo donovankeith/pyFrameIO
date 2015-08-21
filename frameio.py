@@ -5,6 +5,27 @@ A Python Wrapper for the [Frame.io](http://www.frameio.com) API.
 import os
 import requests
 
+class User():
+    def __init__(self, user_data):
+        """Creates a User object with "user_data" dict"""
+
+        self.id = user_data.get("id")
+        self.name = user_data.get("name")
+        self.first_name = user_data.get("first_name")
+        self.last_name = user_data.get("last_name")
+        self.email_confirmed_data = user_data.get("email_confirmed_data")
+        self.has_logged_in = user_data.get("has_logged_in")
+        self.created_at_integer = user_data.get("created_at_integer")
+        self.account_key = user_data.get("account_key")
+        self.email = user_data.get("email")
+        self.link = user_data.get("link")
+        self.location = user_data.get("location")
+        self.bio = user_data.get("bio")
+        self.profile_image = user_data.get("profile_image") #URL of profile images
+        self.role = user_data.get("role")
+        self.teams = user_data.get("teams", [])
+        self.shared_projects = user_data.get("shared_projects", [])
+
 class FrameIO():
     def __init__(self):
         """Create a new FrameIO object
@@ -20,8 +41,8 @@ class FrameIO():
         self.errors = None
 
         #Responses from login
-        self.user_id = None
         self.token = None
+        self.user_id = None
 
     def check_eligible(self, email):
         """Check to see if email address is valid. Store response in class.
@@ -87,3 +108,21 @@ class FrameIO():
         self.messages = response.get("messages")
 
         return True
+
+    def get_user_data(self):
+        """Return the user's data as a Dict with the following keys
+        """
+
+        #We can't get the user's data without the user_id & token
+        if (self.user_id is None) or (self.token is None):
+            return
+
+        values = {
+            "mid": self.user_id,
+            "t": self.token
+            }
+
+        r = requests.post("https://api.frame.io/users/%s/data" % (self.user_id), values)
+        response = r.json()
+
+        return response
