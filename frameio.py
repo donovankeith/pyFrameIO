@@ -7,8 +7,7 @@ import requests
 
 class FrameIO():
     def __init__(self):
-        """
-        :return:
+        """Create a new FrameIO object
         """
 
         #Minimum info provided by user
@@ -24,89 +23,13 @@ class FrameIO():
         self.user_id = None
         self.token = None
 
-    def __str__(self):
-        output = """FrameIO()
-            self.email = %s
-            self.action_key = %s
-            self.messages = %s
-            self.errors = %s
-            self.user_id = %s
-            self.token = %s
-        """ % (self.email, self.action_key, self.messages, self.errors, self.user_id, self.token)
+    def check_eligible(self, email):
+        """Check to see if email address is valid. Store response in class.
+        returns True if successful, False if not.
 
-        return output
-
-    def login(self, email, password=None):
-        """Logs in to Frame.io
-        Return True if successful, False if not"""
-
-        #Email Check
-        if not self.check_eligible(email=email):
-            return False
-
-        self.password = password
-
-        #Crap out if something goes wrong
-        if self.errors:
-            print self.errors
-            return False
-
-        if not self.action_key:
-            return False
-
-        if self.action_key == "user-non-google":
-            return self.login_user_non_google()
-
-        elif self.action_key == "user-google":
-            #TODO: Implement
-            pass
-        elif self.action_key == "user-eligible":
-            #TODO: Implement
-            pass
-        else:
-            print "Non-implemented action_key: ", self.action_key
-
-    def login_user_non_google(self):
-        """Login the user w/ the stored credentials.
-        Return True if successful, False if any errors."""
-
-        values = {
-            "a": self.email,
-            "b": self.password
-        }
-
-        r = requests.post("https://api.frame.io/login", values)
-        response = r.json()
-
-        if "x" in response:
-            self.user_id = response["x"]
-
-        if "y" in response:
-            self.token = response["y"]
-
-        if "messages" in response:
-            self.messages = response["messages"]
-
-        if "errors" in response:
-            self.errors = response["errors"]
-            print self.errors
-            return False
-
-        return True
-
-    def check_eligible(self, email=None):
-        """Check to see if email address is valid. If it is, store it in the class.
-
-        reference: http://docs.frameio.apiary.io/#reference/authentication/initial-mail-check/initial-mail-check
-
-        return True if eligible, False if not.
+        reference:
+        http://docs.frameio.apiary.io/#reference/authentication/initial-mail-check/initial-mail-check
         """
-
-        if not email:
-            return False
-
-        #Store the provided email in the class
-        self.email = email
 
         #Check in w/ frame.io to see if this email is valid for login
         values = {
@@ -116,16 +39,51 @@ class FrameIO():
         r = requests.post("https://api.frame.io/users/check_elegible", values)
         response = r.json()
 
-        if "action_key" in response:
-            self.action_key = response["action_key"]
+        self.messages = response.get("messages")
+        self.action_key = response.get("action_key")
 
-        if "messages" in response:
-            self.messages = response["messages"]
-
-        if "errors" in response:
-            self.errors = response["errors"]
-
-        if not self.errors:
-            return True
-        else:
+        errors = response.get("errors")
+        if errors:
+            print errors
             return False
+
+        return True
+
+    def login(self, email, password):
+        """Logs in to Frame.io w/ email & password pair
+        returns True if successful, False if not
+
+        reference:
+        http://docs.frameio.apiary.io/#reference/authentication/login-with-frameio-account/login-with-frame.io-account
+        """
+
+        #Email Check
+        if not self.check_eligible(email=email):
+            return False
+
+        #Try to login
+        values = {
+            "a": email,
+            "b": password
+        }
+
+        r = requests.post("https://api.frame.io/login", values)
+        response = r.json()
+
+        #Bail if something went wrong
+        errors = response.get("errors")
+        if errors:
+            print errors
+            return False
+
+        #Must have worked
+        #Store the login info
+        self.email = email
+        self.password = password
+
+        #And the response
+        self.user_id = response.get("x")
+        self.token = response.get("y")
+        self.messages = response.get("messages")
+
+        return True
