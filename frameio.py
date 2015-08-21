@@ -11,10 +11,18 @@ class FrameIO():
         :return:
         """
 
+        #Minimum info provided by user
         self.email = None
+        self.password = None
+
+        #Responses from check_eligible
         self.action_key = None
         self.messages = None
         self.errors = None
+
+        #Responses from login
+        self.user_id = None
+        self.token = None
 
     def __str__(self):
         output = """FrameIO()
@@ -22,7 +30,9 @@ class FrameIO():
             self.action_key = %s
             self.messages = %s
             self.errors = %s
-        """ % (self.email, self.action_key, self.messages, self.errors)
+            self.user_id = %s
+            self.token = %s
+        """ % (self.email, self.action_key, self.messages, self.errors, self.user_id, self.token)
 
         return output
 
@@ -38,23 +48,33 @@ class FrameIO():
             print self.errors
             return False
 
+        if not self.action_key:
+            print "No action key, don't know how to login"
+            return False
+
         print self
 
-        #GoogleOAuth
-        #Sign In
-        #Sign Up
+        if self.action_key == "user-non-google":
+            print "Non-Google User, standard login okay"
+            #TODO: Implement
+        elif self.action_key == "user-google":
+            print "Google Login"
+            #TODO: Implement
+        elif self.action_key == "user-eligible":
+            print "Eligible for sign-up"
+            #TODO: Implement
+        else:
+            print "Non-implemented action_key: ", self.action_key
 
 
     def check_eligible(self, email=None):
         """Check to see if email address is valid. If it is, store it in the class.
-        :return: Bool
 
         reference: http://docs.frameio.apiary.io/#reference/authentication/initial-mail-check/initial-mail-check
         """
 
-
         if not email:
-            return False
+            return
 
         #Store the provided email in the class
         self.email = email
