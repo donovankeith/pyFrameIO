@@ -13,6 +13,37 @@ class FrameIO():
 
         self.email = None
         self.action_key = None
+        self.messages = None
+        self.errors = None
+
+    def __str__(self):
+        output = """FrameIO()
+            self.email = %s
+            self.action_key = %s
+            self.messages = %s
+            self.errors = %s
+        """ % (self.email, self.action_key, self.messages, self.errors)
+
+        return output
+
+    def login(self, email, password=None):
+        """Logs in to Frame.io
+        Return True if successful, False if not"""
+
+        #Email Check
+        self.check_eligible(email=email)
+
+        #Crap out if something goes wrong
+        if self.errors:
+            print self.errors
+            return False
+
+        print self
+
+        #GoogleOAuth
+        #Sign In
+        #Sign Up
+
 
     def check_eligible(self, email=None):
         """Check to see if email address is valid. If it is, store it in the class.
@@ -36,21 +67,11 @@ class FrameIO():
         r = requests.post("https://api.frame.io/users/check_elegible", values)
         response = r.json()
 
-        print response
-
-        action_key = None
-        messages = None
-        errors = None
-
         if "action_key" in response:
-            action_key = response["action_key"]
+            self.action_key = response["action_key"]
 
         if "messages" in response:
-            messages = response["messages"]
+            self.messages = response["messages"]
 
         if "errors" in response:
-            errors = response["errors"]
-
-        print "action_key: ", action_key
-        print "messages: ", messages
-        print "errors: ", errors
+            self.errors = response["errors"]

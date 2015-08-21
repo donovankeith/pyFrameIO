@@ -9,7 +9,7 @@ password = "testing"
 
 def main():
     frameio_api = frameio.FrameIO()
-    frameio_api.check_eligible(email)
+    frameio_api.login(email)
 
 if __name__ == "__main__":
     main()
